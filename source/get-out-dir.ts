@@ -32,14 +32,14 @@ const apiKey = <string>program.apiKey;
 
         // detect if we are in a transformation block
         if (process.env.EI_API_ENDPOINT) {
-            // see if /home is writeable
+            // see if /data is writeable
             try {
-                await fs.promises.writeFile('/home/test-get-out-dir.tmp', 'hello world', 'utf-8');
-                await fs.promises.unlink('/home/test-get-out-dir.tmp');
-                outDir = Path.join('/home', 'out');
+                await fs.promises.writeFile('/data/test-get-out-dir.tmp', 'hello world', 'utf-8');
+                await fs.promises.unlink('/data/test-get-out-dir.tmp');
+                outDir = Path.join('/data', 'project-' + project.id);
             }
             catch (ex2) {
-                console.log('ex2', ex2);
+                // noop
             }
         }
 

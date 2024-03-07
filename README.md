@@ -43,6 +43,8 @@ This repository searches through all possible configurations of image size, mode
 
 4. Give it a while, you'll get an email when the results are ready.
 
+> To store the results (e.g. to analyze later), mount in an S3 bucket under `/data` - data will be automatically stored there.
+
 ## How to run locally
 
 1. Install Node.js 18.
