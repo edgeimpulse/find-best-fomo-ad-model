@@ -36,7 +36,7 @@ const apiKey = <string>program.apiKey;
             try {
                 await fs.promises.writeFile('/data/test-get-out-dir.tmp', 'hello world', 'utf-8');
                 await fs.promises.unlink('/data/test-get-out-dir.tmp');
-                outDir = Path.join('/data', 'project-' + project.id);
+                outDir = Path.join('/data', 'find-best-visual-ad-model', 'project-' + project.id);
             }
             catch (ex2) {
                 // noop
