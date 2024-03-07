@@ -17,6 +17,7 @@ program
         'Default: "transfer_mobilenetv2_a35"', 'transfer_mobilenetv2_a35')
     .option('--capacities <capacities>', 'A comma separated list that maps to "anomalyCapacity". Default: "low, medium, high"', 'low, medium, high')
     .option('--image-resize-mode <mode>', 'Either "squash", "fit-short", "fit-long" or "crop" (default: "squash")', 'squash')
+    .requiredOption('--out-directory <dir>', 'Output directory')
     .allowUnknownOption(true)
     .parse(process.argv);
 
@@ -146,7 +147,7 @@ const modelTypes = (<string>program.modelTypes).split(',').map(n => n.trim());
         for (const imageSize of imageSizes) {
             for (const capacity of capacities) {
                 for (const modelType of modelTypes) {
-                    const outFilePath = Path.join(process.cwd(), 'out', 'project-' + project.id, `result_${imageSize}_${modelType}_${capacity}.json`);
+                    const outFilePath = Path.join(program.outDirectory, `result_${imageSize}_${modelType}_${capacity}.json`);
                     await fs.promises.mkdir(Path.dirname(outFilePath), { recursive: true });
 
                     if (await exists(outFilePath)) {

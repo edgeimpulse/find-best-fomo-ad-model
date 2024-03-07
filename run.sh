@@ -8,7 +8,7 @@ cd $SCRIPTPATH
 OUTPUT_DIR=$(node build/get-out-dir.js "$@")
 echo "Output dir is $OUTPUT_DIR"
 echo ""
-node build/search.js "$@"
+node build/search.js "$@" --out-directory "$OUTPUT_DIR"
 
 echo ""
 echo "Analyzing results..."
