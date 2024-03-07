@@ -243,9 +243,10 @@ const modelTypes = (<string>program.modelTypes).split(',').map(n => n.trim());
                     const result = await api.classify.getClassifyJobResult(project.id, {
                         featureExplorerOnly: true,
                     });
+
                     const page = await api.classify.getClassifyJobResultPage(project.id, {
                         offset: 0,
-                        limit: 1000,
+                        limit: 50000,
                     });
                     console.log('  Accuracy is', result.accuracy.accuracyScore?.toFixed(2) + '%');
 

@@ -74,6 +74,11 @@ program
 
         for (let t = 0; t < 20; t += 0.1) {
             let score = getAccuracyScore(t);
+
+            if (score.accuracy === 0 || score.anomalyAccuracy === 0 || score.noAnomalyAccuracy === 0) {
+                continue;
+            }
+
             if (score.accuracy > highestGeneralAccuracy) {
                 highestGeneralAccuracy = score.accuracy;
                 selectedGeneralThreshold = t;
@@ -105,6 +110,11 @@ program
 
             for (let t = 20; t > 0; t -= 0.1) {
                 let score = getAccuracyScore(t);
+
+                if (score.accuracy === 0 || score.anomalyAccuracy === 0 || score.noAnomalyAccuracy === 0) {
+                    continue;
+                }
+
                 if (score.noAnomalyAccuracy < minNonAnomalyAccuracy) continue;
                 if (score.anomalyAccuracy > highestAnomalyAccuracy) {
                     highestAnomalyAccuracy = score.anomalyAccuracy;
