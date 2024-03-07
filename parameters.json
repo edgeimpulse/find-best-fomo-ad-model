@@ -1,0 +1,32 @@
+[{
+    "name": "Project API Key",
+    "value": "",
+    "type": "string",
+    "help": "API Key to an Edge Impulse project. The project needs 'anomaly' and 'no anomaly' classes in the test set, and have access to FOMO-AD.",
+    "param": "api-key"
+},{
+    "name": "Image sizes",
+    "value": "96, 160, 224, 320",
+    "type": "string",
+    "help": "Comma separated list of image sizes to try.",
+    "param": "image-sizes"
+}, {
+    "name": "Model types",
+    "value": "transfer_mobilenetv2_a35",
+    "type": "string",
+    "help": "Comma separated list of FOMO-AD model types to try (valid: transfer_mobilenetv2_a1, transfer_mobilenetv2_a35).",
+    "param": "model-types"
+}, {
+    "name": "Model capacities",
+    "value": "low, medium, high",
+    "type": "string",
+    "help": "Comma separated list of FOMO-AD capacities to try.",
+    "param": "capacities"
+}, {
+    "name": "Image resize mode",
+    "value": "squash",
+    "type": "select",
+    "valid": [ "squash", "fit-short", "fit-long", "crop" ],
+    "help": "How to resize images.",
+    "param": "image-resize-mode"
+}]

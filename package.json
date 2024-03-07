@@ -1,0 +1,32 @@
+{
+    "name": "find-best-visual-ad-model",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Search through all available visual AD models for an Edge Impulse project, and find the best one",
+    "scripts": {
+        "build": "./node_modules/.bin/tsc -p .",
+        "lint": "./node_modules/tslint/bin/tslint -p tsconfig.json"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/edgeimpulse/api-bindings-node.git"
+    },
+    "author": "EdgeImpulse Inc. <hello@edgeimpulse.com>",
+    "license": "Apache-2.0",
+    "bugs": {
+        "url": "https://github.com/edgeimpulse/api-bindings-node/issues"
+    },
+    "homepage": "https://github.com/edgeimpulse/api-bindings-node#readme",
+    "dependencies": {
+        "commander": "4.1.1",
+        "edge-impulse-api": "1.46.4",
+        "request": "2.88.0"
+    },
+    "devDependencies": {
+        "@types/commander": "2.12.2",
+        "@types/node": "18.11.9",
+        "@types/request": "2.48.3",
+        "tslint": "6.1.2",
+        "typescript": "3.9.3"
+    }
+}

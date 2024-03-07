@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "target": "es2019",
+        "module": "commonjs",
+        "esModuleInterop": true,
+        "outDir": "./build",
+        "strict": true,
+        "sourceMap": true,
+        "declaration": true,
+        "allowJs": true
+    },
+    "include": [
+        "**/*"
+    ],
+    "exclude": [
+        "./build"
+    ]
+}

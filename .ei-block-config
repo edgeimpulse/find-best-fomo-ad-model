@@ -1,0 +1,15 @@
+{
+    "version": 1,
+    "config": {
+        "edgeimpulse.com": {
+            "name": "Find best Visual AD model",
+            "type": "transform",
+            "description": "Brute-force your way through all Visual AD configurations",
+            "organizationId": 34,
+            "operatesOn": "standalone",
+            "tlIndRequiresGpu": false,
+            "transformMountpoints": [],
+            "id": 5593
+        }
+    }
+}
