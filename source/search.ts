@@ -17,6 +17,7 @@ program
         'Default: "transfer_mobilenetv2_a35"', 'transfer_mobilenetv2_a35')
     .option('--capacities <capacities>', 'A comma separated list that maps to "anomalyCapacity". Default: "low, medium, high"', 'low, medium, high')
     .option('--image-resize-mode <mode>', 'Either "squash", "fit-short", "fit-long" or "crop" (default: "squash")', 'squash')
+    .option('--image-channels <channels>', 'Either "RGB" or "Grayscale" (default: "RGB")', 'RGB')
     .requiredOption('--out-directory <dir>', 'Output directory')
     .allowUnknownOption(true)
     .parse(process.argv);
@@ -42,6 +43,12 @@ if (models.ImpulseInputBlockResizeModeEnumValues.indexOf(imageResizeMode) === -1
     process.exit(1);
 }
 const modelTypes = (<string>program.modelTypes).split(',').map(n => n.trim());
+const imageChannels = (<'RGB' | 'Grayscale'>program.imageChannels);
+if (imageChannels !== 'RGB' && imageChannels !== 'Grayscale') {
+    console.log(`Invalid value for --image-channels, "${imageChannels}" is not a valid channel ` +
+        `(valid: "RGB", "Grayscale")`);
+    process.exit(1);
+}
 
 // tslint:disable-next-line: no-floating-promises
 (async () => {
@@ -143,6 +150,12 @@ const modelTypes = (<string>program.modelTypes).split(',').map(n => n.trim());
                     (ex.message  || ex.toString()));
             }
         }
+
+        await api.dsp.setDspConfig(project.id, impulse.impulse!.dspBlocks[0].id, {
+            config: {
+                channels: imageChannels,
+            }
+        });
 
         for (const imageSize of imageSizes) {
             for (const capacity of capacities) {

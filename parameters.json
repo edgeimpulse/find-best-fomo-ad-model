@@ -29,4 +29,11 @@
     "valid": [ "squash", "fit-short", "fit-long", "crop" ],
     "help": "How to resize images.",
     "param": "image-resize-mode"
+}, {
+    "name": "Image channels",
+    "value": "RGB",
+    "type": "select",
+    "valid": [ "RGB", "Grayscale" ],
+    "help": "Optionally reduce the color depth of the image.",
+    "param": "image-channels"
 }]
