@@ -14,15 +14,25 @@ program
     .allowUnknownOption(true)
     .parse(process.argv);
 
+type Candidate = {
+    filename: string,
+    threshold: number,
+    overallAccuracy: number,
+    balancedAccuracy: number,
+    anomalyAccuracy: number,
+    noAnomalyAccuracy: number,
+};
+
 // tslint:disable-next-line: no-floating-promises
 (async () => {
     const outDirectory = <string>program.outDirectory;
 
-    let bestOverall = {
-        file: '',
-        threshold: 0,
-        accuracy: 0,
-    };
+    let allCandidates: Candidate[] = [];
+
+    console.log('Raw results per file:');
+    console.log('');
+    console.log('==========');
+    console.log('');
 
     for (let file of await fs.promises.readdir(outDirectory)) {
         if (!file.endsWith('.json')) continue;
@@ -64,6 +74,7 @@ program
             }
             return {
                 accuracy: correct / ret.page.result.length,
+                balancedAccuracy: ((anomalyCorrect / anomalyTotal) + (noAnomalyCorrect / noAnomalyTotal)) / 2,
                 anomalyAccuracy: anomalyCorrect / anomalyTotal,
                 noAnomalyAccuracy: noAnomalyCorrect / noAnomalyTotal,
             };
@@ -90,16 +101,18 @@ program
             console.log(file + ':');
             console.log('   threshold', selectedGeneralThreshold.toFixed(1) + ' (highest overall accuracy):');
             console.log('        overall:    ' + (accScore.accuracy * 100).toFixed(1) + '%');
+            console.log('        balanced:   ' + (accScore.balancedAccuracy * 100).toFixed(1) + '%');
             console.log('        anomaly:    ' + (accScore.anomalyAccuracy * 100).toFixed(1) + '%');
             console.log('        no anomaly: ' + (accScore.noAnomalyAccuracy * 100).toFixed(1) + '%');
 
-            if (accScore.accuracy > bestOverall.accuracy) {
-                bestOverall = {
-                    file,
-                    threshold: selectedGeneralThreshold,
-                    accuracy: accScore.accuracy,
-                };
-            }
+            allCandidates.push({
+                filename: file,
+                threshold: selectedGeneralThreshold,
+                overallAccuracy: accScore.accuracy,
+                balancedAccuracy: accScore.balancedAccuracy,
+                anomalyAccuracy: accScore.anomalyAccuracy,
+                noAnomalyAccuracy: accScore.noAnomalyAccuracy,
+            });
         }
 
         let otherThresholdCandidates = new Set<number>();
@@ -133,15 +146,135 @@ program
             const accScore = getAccuracyScore(t);
 
             console.log('        overall:    ' + (accScore.accuracy * 100).toFixed(1) + '%');
+            console.log('        balanced:   ' + (accScore.balancedAccuracy * 100).toFixed(1) + '%');
             console.log('        anomaly:    ' + (accScore.anomalyAccuracy * 100).toFixed(1) + '%');
             console.log('        no anomaly: ' + (accScore.noAnomalyAccuracy * 100).toFixed(1) + '%');
+
+            allCandidates.push({
+                filename: file,
+                threshold: t,
+                overallAccuracy: accScore.accuracy,
+                balancedAccuracy: accScore.balancedAccuracy,
+                anomalyAccuracy: accScore.anomalyAccuracy,
+                noAnomalyAccuracy: accScore.noAnomalyAccuracy,
+            });
         }
         console.log('');
     }
 
     console.log('===');
     console.log('');
-    console.log('Best overall accuracy is', (bestOverall.accuracy * 100).toFixed(1) + '%',
-        'based on', bestOverall.file, 'w/ threshold', bestOverall.threshold.toFixed(1));
+    console.log('Here are some good models:');
     console.log('');
+
+    let modelsFound: Candidate[] = [];
+
+    let interestingModels: {
+        title: string,
+        fn: () => Candidate,
+    }[] = [
+        {
+            title: 'Model with the least amount of false positives',
+            fn: () => {
+                const highestNoAnomaly = Math.max(...allCandidates.map(c => c.noAnomalyAccuracy));
+                const found = allCandidates.filter(x => x.noAnomalyAccuracy === highestNoAnomaly)
+                    .sort((a, b) => b.anomalyAccuracy - a.anomalyAccuracy)[0];
+                return found;
+            }
+        },
+        {
+            title: 'Model with the highest balanced accuracy',
+            fn: () => {
+                const found = allCandidates.filter(x => x.noAnomalyAccuracy >= 0.5 && x.anomalyAccuracy >= 0.5)
+                    .sort((a, b) => (b.balancedAccuracy) - (a.balancedAccuracy))[0];
+                return found;
+            }
+        },
+        {
+            title: 'Model with the highest balanced accuracy w/ no anomaly >= 0.8',
+            fn: () => {
+                const found = allCandidates.filter(x => x.noAnomalyAccuracy >= 0.8)
+                    .sort((a, b) => (b.balancedAccuracy) - (a.balancedAccuracy))[0];
+                return found;
+            }
+        },
+        {
+            title: 'Model with the highest balanced accuracy w/ no anomaly >= 0.9',
+            fn: () => {
+                const found = allCandidates.filter(x => x.noAnomalyAccuracy >= 0.9)
+                    .sort((a, b) => (b.balancedAccuracy) - (a.balancedAccuracy))[0];
+                return found;
+            }
+        },
+        {
+            title: 'Model with the highest balanced accuracy w/ no anomaly >= 0.95',
+            fn: () => {
+                const found = allCandidates.filter(x => x.noAnomalyAccuracy >= 0.95)
+                    .sort((a, b) => (b.balancedAccuracy) - (a.balancedAccuracy))[0];
+                return found;
+            }
+        },
+        {
+            title: 'Model with the highest balanced accuracy w/ no anomaly >= 0.98',
+            fn: () => {
+                const found = allCandidates.filter(x => x.noAnomalyAccuracy >= 0.98)
+                    .sort((a, b) => (b.balancedAccuracy) - (a.balancedAccuracy))[0];
+                return found;
+            }
+        },
+        {
+            title: 'Model with the highest overall accuracy',
+            fn: () => {
+                const found = allCandidates.filter(x => x.noAnomalyAccuracy >= 0.5 && x.anomalyAccuracy >= 0.5)
+                    .sort((a, b) => (b.overallAccuracy) - (a.overallAccuracy))[0];
+                return found;
+            }
+        },
+        {
+            title: 'Model with the highest overall accuracy w/ no anomaly >= 0.8',
+            fn: () => {
+                const found = allCandidates.filter(x => x.noAnomalyAccuracy >= 0.8)
+                    .sort((a, b) => (b.overallAccuracy) - (a.overallAccuracy))[0];
+                return found;
+            }
+        },
+        {
+            title: 'Model with the highest overall accuracy w/ no anomaly >= 0.9',
+            fn: () => {
+                const found = allCandidates.filter(x => x.noAnomalyAccuracy >= 0.9)
+                    .sort((a, b) => (b.overallAccuracy) - (a.overallAccuracy))[0];
+                return found;
+            }
+        },
+        {
+            title: 'Model with the highest overall accuracy w/ no anomaly >= 0.95',
+            fn: () => {
+                const found = allCandidates.filter(x => x.noAnomalyAccuracy >= 0.95)
+                    .sort((a, b) => (b.overallAccuracy) - (a.overallAccuracy))[0];
+                return found;
+            }
+        },
+        {
+            title: 'Model with the highest overall accuracy w/ no anomaly >= 0.98',
+            fn: () => {
+                const found = allCandidates.filter(x => x.noAnomalyAccuracy >= 0.98)
+                    .sort((a, b) => (b.overallAccuracy) - (a.overallAccuracy))[0];
+                return found;
+            }
+        },
+    ];
+
+    for (const model of interestingModels) {
+        const found = model.fn();
+        if (modelsFound.indexOf(found) !== -1) continue;
+
+        console.log(`${model.title}:`);
+        console.log(`    ${found.filename} w/ threshold ${found.threshold.toFixed(1)}:`);
+        console.log('        overall:    ' + (found.overallAccuracy * 100).toFixed(1) + '%');
+        console.log('        balanced:   ' + (found.balancedAccuracy * 100).toFixed(1) + '%');
+        console.log('        anomaly:    ' + (found.anomalyAccuracy * 100).toFixed(1) + '%');
+        console.log('        no anomaly: ' + (found.noAnomalyAccuracy * 100).toFixed(1) + '%');
+        console.log('');
+        modelsFound.push(found);
+    }
 })();
