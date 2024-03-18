@@ -171,7 +171,7 @@ type Candidate = {
 
     let interestingModels: {
         title: string,
-        fn: () => Candidate,
+        fn: () => Candidate | undefined,
     }[] = [
         {
             title: 'Model with the least amount of false positives',
@@ -266,6 +266,7 @@ type Candidate = {
 
     for (const model of interestingModels) {
         const found = model.fn();
+        if (!found) continue;
         if (modelsFound.indexOf(found) !== -1) continue;
 
         console.log(`${model.title}:`);
