@@ -64,6 +64,7 @@ if (imageChannels !== 'RGB' && imageChannels !== 'Grayscale') {
         console.log('Finding best visual AD model for project', project.owner, '/', project.name);
         console.log('    Image sizes:', imageSizes.join(', '));
         console.log('    Image resize mode:', imageResizeMode);
+        console.log('    Image channels:', imageChannels);
         console.log('    Model types:', modelTypes.join(', '));
         console.log('    Model capacities:', capacities.join(', '));
         console.log('');
